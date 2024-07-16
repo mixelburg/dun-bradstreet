@@ -1,29 +1,36 @@
-import {Box, CircularProgress, InputAdornment, Pagination, Stack, TextField, Typography} from "@mui/material";
+import {Box, CircularProgress, InputAdornment, Link, Pagination, Stack, TextField, Typography} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import {ChangeEvent, useEffect, useState} from "react";
 import {atomWithHash} from "jotai-location";
 import {useAtom} from "jotai";
-import {SearchResults, Topic,} from "./types";
+import {RecentSearch, SearchResults, Topic,} from "./types";
 import {TopicCard} from "./TopicCard";
 import {getResultsForQuery} from "./query";
+import {atomWithStorage} from "jotai/utils";
+import {useLazySearch} from "./useLazySearch";
+import {useRecentSearches} from "./useRecentSearches";
 
-const searchAtom = atomWithHash<string>('q', '')
 const pageSize = 10
 
 export const App = () => {
-  const [search, setSearch] = useAtom(searchAtom)
-  const [lazySearch, setLazySearch] = useState<string>('')
+  const {
+    search,
+    lazySearch,
+    setSearch
+  } = useLazySearch()
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    const timeout = setTimeout(() => setLazySearch(search), 500)
-    return () => clearTimeout(timeout)
-  }, [search]);
-
   const [results, setResults] = useState<SearchResults | null>(null)
+
+  const {recentSearches, addRecentSearch} = useRecentSearches()
+
   useEffect(() => {
     const fetchResults = async () => {
       if (!lazySearch) return
+      addRecentSearch({
+        query: lazySearch,
+        url: window.location.href
+      })
       const data = await getResultsForQuery(lazySearch)
       setResults(data)
     }
@@ -34,17 +41,19 @@ export const App = () => {
   const [page, setPage] = useState<number>(1);
   const numPages = results ? Math.ceil(results.RelatedTopics.length / pageSize) : 0
   const currentPageResults = results ? results.RelatedTopics.slice((page - 1) * pageSize, page * pageSize) : []
+  console.log('recentSearches', recentSearches)
 
   return <Stack
     sx={{
       height: '100vh',
       width: '100vw',
     }}
+    direction='row'
   >
     <Stack
       sx={{
         p: 4,
-        height: '100%',
+        width: '100%',
       }}
       spacing={2}
     >
@@ -69,8 +78,8 @@ export const App = () => {
 
       {
         loading ? <>
-          <Box sx={{ display: 'flex' }}>
-            <CircularProgress />
+          <Box sx={{display: 'flex'}}>
+            <CircularProgress/>
           </Box>
         </> : <>
           {
@@ -97,7 +106,32 @@ export const App = () => {
 
         </>
       }
-
+    </Stack>
+    <Stack
+      p={4}
+      sx={{
+        minWidth: 200
+      }}
+    >
+      <Typography variant='h5'>Recent Searches</Typography>
+      <Stack>
+        {
+          recentSearches.map(search => <>
+            <Link
+              href={search.url}
+              variant='body1'
+              sx={{
+                // set overflow to ellipsis
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {search.query}
+            </Link>
+          </>)
+        }
+      </Stack>
     </Stack>
   </Stack>
 }

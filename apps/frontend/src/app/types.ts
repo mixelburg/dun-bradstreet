@@ -9,3 +9,8 @@ export type Topic = {
 export type SearchResults = {
   RelatedTopics: Topic[];
 }
+
+export type RecentSearch = {
+  query: string;
+  url: string;
+}
