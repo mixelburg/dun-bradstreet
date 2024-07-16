@@ -1,7 +1,7 @@
 
 
 export type Topic = {
-  FirstUrl: string;
+  FirstURL: string;
   Text: string;
 }
 

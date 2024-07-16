@@ -94,7 +94,7 @@ export const App = () => {
                 >
                   {
                     currentPageResults.map((topic) => (
-                      <TopicCard key={topic.FirstUrl} topic={topic} search={lazySearch}/>
+                      <TopicCard key={topic.FirstURL} topic={topic} search={lazySearch}/>
                     ))
                   }
                 </Stack>

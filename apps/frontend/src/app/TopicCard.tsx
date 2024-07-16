@@ -1,14 +1,14 @@
 import Stack from "@mui/material/Stack";
-import { memo } from "react";
-import { Topic } from "./types";
-import { Link, Typography } from "@mui/material";
+import {memo} from "react";
+import {Topic} from "./types";
+import {Link, Typography} from "@mui/material";
 
 export type TopicCardProps = {
   topic: Topic;
   search: string;
 };
 
-const HighlightedText = ({ text, highlight }: { text: string; highlight: string }) => {
+const HighlightedText = ({text, highlight}: { text: string; highlight: string }) => {
   if (!highlight) {
     return <>{text}</>;
   }
@@ -17,7 +17,7 @@ const HighlightedText = ({ text, highlight }: { text: string; highlight: string 
     <>
       {parts.map((part, index) =>
         part.toLowerCase() === highlight.toLowerCase() ? (
-          <span key={index} style={{ backgroundColor: "yellow" }}>
+          <span key={index} style={{backgroundColor: "yellow"}}>
             {part}
           </span>
         ) : (
@@ -28,12 +28,11 @@ const HighlightedText = ({ text, highlight }: { text: string; highlight: string 
   );
 };
 
-export const TopicCard = memo(({ topic, search }: TopicCardProps) => {
+export const TopicCard = memo(({topic, search}: TopicCardProps) => {
+  console.log(topic)
   return (
-    <Stack>
-      <Link href={topic.FirstUrl} variant="body1">
-        <HighlightedText text={topic.Text} highlight={search} />
-      </Link>
-    </Stack>
+    <Link href={topic.FirstURL} variant="body1">
+      <HighlightedText text={topic.Text} highlight={search}/>
+    </Link>
   );
 });
